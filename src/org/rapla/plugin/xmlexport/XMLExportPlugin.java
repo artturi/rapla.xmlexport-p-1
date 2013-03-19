@@ -11,13 +11,13 @@
  | Definition as published by the Open Source Initiative (OSI).             |
  *--------------------------------------------------------------------------*/
 package org.rapla.plugin.xmlexport;
-import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.avalon.framework.logger.Logger;
 import org.rapla.components.xmlbundle.I18nBundle;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
+import org.rapla.framework.Configuration;
 import org.rapla.framework.Container;
 import org.rapla.framework.PluginDescriptor;
 import org.rapla.framework.StartupEnvironment;
+import org.rapla.framework.logger.Logger;
 import org.rapla.plugin.RaplaExtensionPoints;
 import org.rapla.servletpages.DefaultHTMLMenuEntry;
 import org.rapla.servletpages.HTMLMenuExtensionPoint;
