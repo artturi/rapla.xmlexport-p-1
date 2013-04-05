@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.rapla.components.util.IOUtil;
 import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.entities.Category;
-import org.rapla.entities.User;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
@@ -65,7 +64,7 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
             out.println("<?xml version=\"1.0\" encoding=\"ISO-8859-15\" ?>");
             out.println("<export>");
             
-            Map  parameters = request.getParameterMap();
+            Map <?,?> parameters = request.getParameterMap();
             String outputFormat = (parameters.containsKey("format") == true)? request.getParameter("format") : "default" ;
             
             for ( int i=0;i< blocks.size();i++)
@@ -108,12 +107,11 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
     }
     
     private List<AppointmentBlock> getBlocksForRequest(HttpServletRequest request, java.io.PrintWriter out) throws ServletException {
-        Map  parameters = request.getParameterMap();
+        Map<?,?>  parameters = request.getParameterMap();
         SerializableDateTimeFormat format = new SerializableDateTimeFormat();
         //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         
         try {
-	        String username = (parameters.containsKey("user"))? request.getParameter( "user" ) : "admin"; 
 	        Date start = new Date();
 	        Date end = new Date(start.getTime() + 86400*1000);
 	        if (parameters.containsKey("start") == true) {
@@ -125,10 +123,11 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
 	        	end = format.parseDate( endString, true);
 	        }
 	         
-	        User user = getQuery().getUser( username );           
+	        //String username = (parameters.containsKey("user"))? request.getParameter( "user" ) : "admin"; 
+	        //User user = getQuery().getUser( username );           
 	
 	        // Filtering Resources
-	        ArrayList filters = new ArrayList();
+	        ArrayList<ClassificationFilter> filters = new ArrayList<ClassificationFilter>();
 	        if (parameters.containsKey("keys"))
 	        {
 	            String[] eventTypes = request.getParameter("keys").split(",");
@@ -191,7 +190,7 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
             	Classification classification = alls[j].getClassification();
             	String allKey = classification.getType().getElementKey();
             	Attribute[] attributes = classification.getAttributes();
-            	String allocatableId = ((RefEntity) alls[j]).getId().toString();
+            	String allocatableId = ((RefEntity<?>) alls[j]).getId().toString();
             	if ( allocatableId.contains("_") == true) {
             		allocatableId = allocatableId.split("_")[1];
             	}
@@ -237,7 +236,7 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
             for (int j=0;j<alls.length;j++) {
             	Classification classification = alls[j].getClassification();
             	String allKey = classification.getType().getElementKey();
-            	String allocatableId = ((RefEntity) alls[j]).getId().toString();
+            	String allocatableId = ((RefEntity<?>) alls[j]).getId().toString();
             	if ( allocatableId.contains("_") == true) {
             		allocatableId = allocatableId.split("_")[1];
             	}
