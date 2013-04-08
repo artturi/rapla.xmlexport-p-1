@@ -11,13 +11,13 @@
  | Definition as published by the Open Source Initiative (OSI).             |
  *--------------------------------------------------------------------------*/
 package org.rapla.plugin.xmlexport;
-import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.Container;
 import org.rapla.framework.PluginDescriptor;
-import org.rapla.framework.RaplaContext;
+import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.StartupEnvironment;
 import org.rapla.plugin.RaplaExtensionPoints;
+import org.rapla.server.ServerServiceContainer;
 import org.rapla.servletpages.DefaultHTMLMenuEntry;
 import org.rapla.servletpages.HTMLMenuExtensionPoint;
 ///import org.rapla.servletpages.RaplaResourcePageGenerator;
@@ -28,13 +28,10 @@ import org.rapla.servletpages.HTMLMenuExtensionPoint;
    to the rapla-system.
  */
 
-public class XMLExportPlugin extends RaplaComponent
+public class XMLExportPlugin
     implements
     PluginDescriptor
 {
-    public XMLExportPlugin(RaplaContext context) {
-        super(context);
-    }
 
     public static final String PLUGIN_CLASS = XMLExportPlugin.class.getName();
 
@@ -43,24 +40,21 @@ public class XMLExportPlugin extends RaplaComponent
     }
     
     /**
+     * @throws RaplaContextException 
      * @see org.rapla.framework.PluginDescriptor#provideServices(org.rapla.framework.general.Container)
      */
-    public void provideServices(Container container, Configuration config)  {
+    public void provideServices(Container container, Configuration config) throws RaplaContextException  {
         if ( !config.getAttributeAsBoolean("enabled", false) )
         	return;
 
         StartupEnvironment env = container.getStartupEnvironment();
         if ( env.getStartupMode() == StartupEnvironment.SERVLET) {
-        	
-            container.addContainerProvidedComponent( RaplaExtensionPoints.SERVLET_PAGE_EXTENSION, XMLPageGenerator.class,"xmlexport", config);
-            
-            try {
-                    HTMLMenuExtensionPoint mainMenu = getService( RaplaExtensionPoints.HTML_MAIN_MENU_EXTENSION_POINT );
-                    mainMenu.insert( new DefaultHTMLMenuEntry("XML-EXPORT","rapla?page=xmlexport"));
 
-            } catch ( Exception ex) {
-                //getLogger().error("Could not initialize xmlexport plugin on server" , ex);
-            }
+        	ServerServiceContainer serviceContainer = container.getContext().lookup( ServerServiceContainer.class);
+            serviceContainer.addWebpage("xmlexport",XMLPageGenerator.class);
+            
+            HTMLMenuExtensionPoint mainMenu = container.getContext().lookup( RaplaExtensionPoints.HTML_MAIN_MENU_EXTENSION_POINT );
+            mainMenu.insert( new DefaultHTMLMenuEntry("XML-EXPORT","rapla?page=xmlexport"));
         }        
     }
 

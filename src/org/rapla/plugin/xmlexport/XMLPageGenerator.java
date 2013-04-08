@@ -32,13 +32,12 @@ import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
-import org.rapla.framework.RaplaException;
 import org.rapla.servletpages.RaplaPageGenerator;
 
 
 public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenerator
 {
-    public XMLPageGenerator(RaplaContext context) throws RaplaException
+    public XMLPageGenerator(RaplaContext context) 
     {
         super( context );
     }
@@ -146,7 +145,7 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
 	        else
 	        {
 	        	for (int i=0;i< filters.size ();i++)
-	        		cfilters[i] = (ClassificationFilter) filters.get(i);
+	        		cfilters[i] =  filters.get(i);
 	        }
 	        Allocatable[] allocatables = getQuery().getAllocatables(cfilters);
 	        
