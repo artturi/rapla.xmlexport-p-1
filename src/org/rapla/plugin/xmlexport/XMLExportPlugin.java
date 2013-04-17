@@ -15,8 +15,8 @@ import org.rapla.framework.Configuration;
 import org.rapla.framework.Container;
 import org.rapla.framework.PluginDescriptor;
 import org.rapla.framework.RaplaContextException;
-import org.rapla.framework.StartupEnvironment;
 import org.rapla.plugin.RaplaExtensionPoints;
+import org.rapla.server.ServerService;
 import org.rapla.server.ServerServiceContainer;
 import org.rapla.servletpages.DefaultHTMLMenuEntry;
 import org.rapla.servletpages.HTMLMenuExtensionPoint;
@@ -47,9 +47,8 @@ public class XMLExportPlugin
         if ( !config.getAttributeAsBoolean("enabled", false) )
         	return;
 
-        StartupEnvironment env = container.getStartupEnvironment();
-        if ( env.getStartupMode() == StartupEnvironment.SERVLET) {
-
+        if ( container.getContext().has(ServerService.class) ) 
+        {
         	ServerServiceContainer serviceContainer = container.getContext().lookup( ServerServiceContainer.class);
             serviceContainer.addWebpage("xmlexport",XMLPageGenerator.class);
             
