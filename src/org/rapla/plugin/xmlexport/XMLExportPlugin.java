@@ -15,7 +15,7 @@ import org.rapla.framework.Configuration;
 import org.rapla.framework.Container;
 import org.rapla.framework.PluginDescriptor;
 import org.rapla.framework.RaplaContextException;
-import org.rapla.plugin.RaplaExtensionPoints;
+import org.rapla.plugin.RaplaServerExtensionPoints;
 import org.rapla.server.ServerService;
 import org.rapla.server.ServerServiceContainer;
 import org.rapla.servletpages.DefaultHTMLMenuEntry;
@@ -52,7 +52,7 @@ public class XMLExportPlugin
         	ServerServiceContainer serviceContainer = container.getContext().lookup( ServerServiceContainer.class);
             serviceContainer.addWebpage("xmlexport",XMLPageGenerator.class);
             
-            HTMLMenuExtensionPoint mainMenu = container.getContext().lookup( RaplaExtensionPoints.HTML_MAIN_MENU_EXTENSION_POINT );
+            HTMLMenuExtensionPoint mainMenu = container.getContext().lookup( RaplaServerExtensionPoints.HTML_MAIN_MENU_EXTENSION_POINT );
             mainMenu.insert( new DefaultHTMLMenuEntry("XML-EXPORT","rapla?page=xmlexport"));
         }        
     }
