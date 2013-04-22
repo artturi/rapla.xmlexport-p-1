@@ -1,7 +1,4 @@
-/**
- *
- */
-package org.rapla.plugin.xmlexport;
+package org.rapla.plugin.xmlexport.server;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

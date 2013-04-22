@@ -11,55 +11,19 @@
  | Definition as published by the Open Source Initiative (OSI).             |
  *--------------------------------------------------------------------------*/
 package org.rapla.plugin.xmlexport;
+import org.rapla.client.ClientServiceContainer;
 import org.rapla.framework.Configuration;
-import org.rapla.framework.Container;
 import org.rapla.framework.PluginDescriptor;
 import org.rapla.framework.RaplaContextException;
-import org.rapla.plugin.RaplaServerExtensionPoints;
-import org.rapla.server.ServerService;
-import org.rapla.server.ServerServiceContainer;
-import org.rapla.servletpages.DefaultHTMLMenuEntry;
-import org.rapla.servletpages.HTMLMenuExtensionPoint;
-///import org.rapla.servletpages.RaplaResourcePageGenerator;
 
 
-/**
-   This is a demonstration of a rapla-plugin. It adds a sample usecase and option
-   to the rapla-system.
- */
-
-public class XMLExportPlugin
-    implements
-    PluginDescriptor
+public class XMLExportPlugin implements  PluginDescriptor<ClientServiceContainer>
 {
 
     public static final String PLUGIN_CLASS = XMLExportPlugin.class.getName();
 
-    public String toString() {
-        return "XML Export";
-    }
-    
-    /**
-     * @throws RaplaContextException 
-     * @see org.rapla.framework.PluginDescriptor#provideServices(org.rapla.framework.general.Container)
-     */
-    public void provideServices(Container container, Configuration config) throws RaplaContextException  {
-        if ( !config.getAttributeAsBoolean("enabled", false) )
-        	return;
+    public void provideServices(ClientServiceContainer container, Configuration config) throws RaplaContextException  {
 
-        if ( container.getContext().has(ServerService.class) ) 
-        {
-        	ServerServiceContainer serviceContainer = container.getContext().lookup( ServerServiceContainer.class);
-            serviceContainer.addWebpage("xmlexport",XMLPageGenerator.class);
-            
-            HTMLMenuExtensionPoint mainMenu = container.getContext().lookup( RaplaServerExtensionPoints.HTML_MAIN_MENU_EXTENSION_POINT );
-            mainMenu.insert( new DefaultHTMLMenuEntry("XML-EXPORT","rapla?page=xmlexport"));
-        }        
-    }
-
-    public Object getPluginMetaInfos( String key )
-    {
-        return null;
     }
 
 }
