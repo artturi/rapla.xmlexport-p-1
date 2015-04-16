@@ -77,15 +77,17 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
                 Allocatable[] persons = reservation.getPersons();
                 Allocatable[] resources = reservation.getResources();
                 
+                // check reservation.hasAllocated(alloc, app);
+                
                 if ( outputFormat.equals( new String("limited") ) == true )
                 {
-                	this.allocatableToLimitedXML(persons, true, out); 
-                    this.allocatableToLimitedXML(resources, false, out);
+                	this.allocatableToLimitedXML(persons, true, out, block); 
+                    this.allocatableToLimitedXML(resources, false, out, block);
                 }
                 else
                 {
-                	this.allocatableToXML(persons, true, out); 
-                    this.allocatableToXML(resources, false, out);
+                	this.allocatableToXML(persons, true, out, block); 
+                    this.allocatableToXML(resources, false, out, block);
                 } 
                 
                 
@@ -158,7 +160,7 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
                 for ( int j=0;j< appointments.length;j++)
                 {
                     Appointment appointment = appointments[j];
-                    appointment.createBlocks ( start, end, blocks );
+                    appointment.createBlocks ( start, end, blocks, true );
                 }
             }
             // sort them by time
@@ -178,7 +180,11 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
      * allocatableToXML loops through an array of allocatables, fetches every attributes, and outputs in xml
      * 
      */
-    public void allocatableToXML(Allocatable[] alls, boolean isPerson, java.io.PrintWriter out) {
+    public void allocatableToXML(Allocatable[] alls, boolean isPerson, java.io.PrintWriter out, AppointmentBlock block) {
+
+		Appointment app = block.getAppointment();
+        Reservation reservation = app.getReservation();
+        
     	String blockName = (isPerson)? "person" : "resource";
         if (alls.length > 0) {
             out.println("    <" + blockName + "s>");
@@ -190,32 +196,35 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
             	if ( allocatableId.contains("_") == true) {
             		allocatableId = allocatableId.split("_")[1];
             	}
-                out.println("      <" + blockName + " typekey='" + allKey + "' relid='" + allocatableId + "' >");
-                out.println("        <" + blockName + "Type>" + classification.getType().getName(getLocale()) + "</" + blockName + "Type>");
-                out.println("        <displayName>" + alls[j].getName(getLocale()).replace("&", "") + "</displayName>");
-                for (int k=0; k<attributes.length; k++)
-                {      
-                	String attributeKey = attributes[k].getKey();
-                	if (attributes[k].getType() == AttributeType.CATEGORY) {
-                		Category cat = (Category) classification.getValue(attributeKey);  
-                		if ( cat != null ) {
-                			out.println("        <" + attributeKey + ">" + cat.getName(getLocale()).replace("&", "") + "</" + attributeKey + ">");
-                		}
-                		else {
-                			out.println("        <" + attributeKey + ">null</" + attributeKey + ">");
-                		}
-                	}
-                	else {
-                		Object attributeValue = classification.getValue(attributeKey);
-                		if ( attributeValue != null) {
-                			out.println("        <" + attributeKey + ">" + attributeValue.toString().replace("&", "") + "</" + attributeKey + ">");
-                		}
-                		else {
-                			out.println("        <" + attributeKey + ">null</" + attributeKey + ">");
-                		}                		
-                	}
+                if (reservation.hasAllocated(alls[j], app)) {                	
+
+                	out.println("      <" + blockName + " typekey='" + allKey + "' relid='" + allocatableId + "' >");                           
+	                out.println("        <" + blockName + "Type>" + classification.getType().getName(getLocale()) + "</" + blockName + "Type>");
+	                out.println("        <displayName>" + alls[j].getName(getLocale()).replace("&", "") + "</displayName>");
+	                for (int k=0; k<attributes.length; k++)
+	                {      
+	                	String attributeKey = attributes[k].getKey();
+	                	if (attributes[k].getType() == AttributeType.CATEGORY) {
+	                		Category cat = (Category) classification.getValue(attributeKey);  
+	                		if ( cat != null ) {
+	                			out.println("        <" + attributeKey + ">" + cat.getName(getLocale()).replace("&", "") + "</" + attributeKey + ">");
+	                		}
+	                		else {
+	                			out.println("        <" + attributeKey + ">null</" + attributeKey + ">");
+	                		}
+	                	}
+	                	else {
+	                		Object attributeValue = classification.getValue(attributeKey);
+	                		if ( attributeValue != null) {
+	                			out.println("        <" + attributeKey + ">" + attributeValue.toString().replace("&", "") + "</" + attributeKey + ">");
+	                		}
+	                		else {
+	                			out.println("        <" + attributeKey + ">null</" + attributeKey + ">");
+	                		}                		
+	                	}
+	                }
+	                out.println("      </" + blockName + ">");
                 }
-                out.println("      </" + blockName + ">");
             }
             out.println("    </" + blockName + "s>");
         }    	
@@ -225,8 +234,12 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
      * allocatableToXML loops through an array of allocatables, fetches the minimum required to build sql queries.
      * 
      */    
-    public void allocatableToLimitedXML(Allocatable[] alls, boolean isPerson, java.io.PrintWriter out) {
+    public void allocatableToLimitedXML(Allocatable[] alls, boolean isPerson, java.io.PrintWriter out, AppointmentBlock block) {
     	String blockName = (isPerson)? "person" : "resource";
+    	
+		Appointment app = block.getAppointment();
+        Reservation reservation = app.getReservation();
+        
         if (alls.length > 0) {
             out.println("    <" + blockName + "s>");
             for (int j=0;j<alls.length;j++) {
@@ -236,7 +249,10 @@ public class XMLPageGenerator  extends RaplaComponent implements RaplaPageGenera
             	if ( allocatableId.contains("_") == true) {
             		allocatableId = allocatableId.split("_")[1];
             	}
-                out.println("      <" + blockName + " typekey='" + allKey + "' relid='" + allocatableId + "' />");
+                if (reservation.hasAllocated(alls[j], app)) {                	            	
+            	
+                	out.println("      <" + blockName + " typekey='" + allKey + "' relid='" + allocatableId + "' />");
+                }
             }
             out.println("    </" + blockName + "s>");
         }    	
